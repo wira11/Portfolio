@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article - Wira Putrawan Pakpahan</title>
+    <meta name="description" content="Read full article about QA and software testing">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Simple Header for Article Page -->
+    <header style="background: white; border-bottom: 1px solid #e5e7eb;">
+        <nav class="navbar" style="padding: 0;">
+            <div style="max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
+                <a href="blog.html" style="display: inline-flex; align-items: center; color: #6b7280; text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: color 0.2s;">
+                    <svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    All Articles
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Article Content - Medium Style -->
+    <article style="max-width: 680px; margin: 0 auto; padding: 56px 24px 80px;">
+        <div id="articleContent">
+            <div style="text-align: center; color: #9ca3af; padding: 60px 0;">Loading article...</div>
+        </div>
+    </article>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Wira Putrawan Pakpahan. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="index.html">Back to Portfolio</a>
+                <a href="blog.html">Blog</a>
+                <a href="index.html#contact">Contact</a>
+                <a href="https://www.linkedin.com/in/wira-putrawan/" target="_blank">LinkedIn</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Get article ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const articleId = parseInt(urlParams.get('id'));
+
+        async function loadArticle() {
+            try {
+                const response = await fetch('data/articles.json');
+                const articles = await response.json();
+                const article = articles.find(a => a.id === articleId);
+
+                if (!article) {
+                    document.getElementById('articleContent').innerHTML = '<p>Article not found</p>';
+                    return;
+                }
+
+                // Set page title
+                document.title = `${article.title} - Wira Putrawan Pakpahan`;
+
+                console.log('Article title:', article.title);
+                console.log('Article content:', article.content);
+
+                // Simple and safe content formatting
+                let formattedContent = '';
+                const paragraphs = article.content.split('\n\n');
+                
+                paragraphs.forEach((para, index) => {
+                    para = para.trim();
+                    if (!para) return;
+                    
+                    // Check if it's a heading
+                    if (para.startsWith('## ')) {
+                        formattedContent += `<h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 48px 0 20px 0; line-height: 1.3; letter-spacing: -0.01em;">${para.substring(3)}</h2>`;
+                    }
+                    // Check if it's a list
+                    else if (para.includes('\n- ')) {
+                        const items = para.split('\n')
+                            .filter(line => line.startsWith('- '))
+                            .map(line => `<li style="margin-bottom: 12px; color: #374151;">${line.substring(2)}</li>`)
+                            .join('');
+                        formattedContent += `<ul style="margin: 24px 0; padding-left: 24px; list-style: disc;">${items}</ul>`;
+                    }
+                    // Regular paragraph
+                    else {
+                        formattedContent += `<p style="margin-bottom: 24px; color: #374151; line-height: 1.75;">${para}</p>`;
+                    }
+                });
+
+                // Display article with Medium-like styling
+                document.getElementById('articleContent').innerHTML = `
+                    <!-- Article Metadata -->
+                    <div style="margin-bottom: 32px;">
+                        <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px;">
+                            <time style="color: #6b7280; font-size: 0.875rem;">${article.date}</time>
+                            <span style="color: #d1d5db;">•</span>
+                            <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">${article.category}</span>
+                        </div>
+                        <h1 style="font-size: 2.5rem; font-weight: 700; line-height: 1.2; color: #111827; margin: 0 0 24px 0; letter-spacing: -0.02em;">${article.title}</h1>
+                    </div>
+                    
+                    <!-- Article Body -->
+                    <div style="font-size: 1.125rem; line-height: 1.75; color: #374151;">
+                        ${formattedContent}
+                    </div>
+                    
+                    <!-- Share Section -->
+                    <div style="margin-top: 64px; padding-top: 32px; border-top: 1px solid #e5e7eb;">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <span style="color: #6b7280; font-size: 0.875rem; font-weight: 500;">Share this article:</span>
+                            <div style="display: flex; gap: 12px;">
+                                <a href="https://www.linkedin.com/sharing/share-offsite/?url=${window.location.href}" 
+                                   target="_blank" 
+                                   style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #0077b5; color: white; border-radius: 50%; text-decoration: none; transition: transform 0.2s;"
+                                   onmouseover="this.style.transform='scale(1.1)'" 
+                                   onmouseout="this.style.transform='scale(1)'">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="https://twitter.com/intent/tweet?url=${window.location.href}&text=${encodeURIComponent(article.title)}" 
+                                   target="_blank" 
+                                   style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #1da1f2; color: white; border-radius: 50%; text-decoration: none; transition: transform 0.2s;"
+                                   onmouseover="this.style.transform='scale(1.1)'" 
+                                   onmouseout="this.style.transform='scale(1)'">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;            } catch (error) {
+                console.error('Error loading article:', error);
+                document.getElementById('articleContent').innerHTML = '<p>Error loading article. Please try again later.</p>';
+            }
+        }
+
+        // Load article on page load
+        document.addEventListener('DOMContentLoaded', loadArticle);
+    </script>
+</body>
+</html>
