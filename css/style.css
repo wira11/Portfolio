@@ -355,6 +355,35 @@ section {
     font-size: 1.1rem;
     color: var(--primary-color);
     margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.employment-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.employment-badge.fulltime {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.employment-badge.contract {
+    background: #fed7aa;
+    color: #92400e;
+}
+
+.employment-badge.internship {
+    background: #dbeafe;
+    color: #1e40af;
 }
 
 .timeline-content ul {
