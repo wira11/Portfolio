@@ -9,7 +9,10 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 block: 'start'
             });
             // Close mobile menu if open
-            navLinks.classList.remove('active');
+            const navLinks = document.querySelector('.nav-links');
+            if (navLinks) {
+                navLinks.classList.remove('active');
+            }
         }
     });
 });
@@ -43,29 +46,33 @@ function calculateDuration(startDate, endDate) {
 document.addEventListener('DOMContentLoaded', () => {
     const timelineDates = document.querySelectorAll('.timeline-date[data-start]');
     
-    timelineDates.forEach(element => {
-        const startDate = element.getAttribute('data-start');
-        const endDate = element.getAttribute('data-end');
-        const currentText = element.textContent;
-        const duration = calculateDuration(startDate, endDate);
-        
-        // Add duration to existing text
-        element.textContent = `${currentText} (${duration})`;
-    });
+    if (timelineDates.length > 0) {
+        timelineDates.forEach(element => {
+            const startDate = element.getAttribute('data-start');
+            const endDate = element.getAttribute('data-end');
+            const currentText = element.textContent;
+            const duration = calculateDuration(startDate, endDate);
+            
+            // Add duration to existing text
+            element.textContent = `${currentText} (${duration})`;
+        });
+    }
 });
 
 // Mobile Menu Toggle
 const hamburger = document.querySelector('.hamburger');
 const navLinks = document.querySelector('.nav-links');
 
-hamburger.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
-    hamburger.classList.toggle('active');
-});
+if (hamburger && navLinks) {
+    hamburger.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+        hamburger.classList.toggle('active');
+    });
+}
 
 // Close menu when clicking outside
 document.addEventListener('click', (e) => {
-    if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+    if (hamburger && navLinks && !hamburger.contains(e.target) && !navLinks.contains(e.target)) {
         navLinks.classList.remove('active');
         hamburger.classList.remove('active');
     }
@@ -87,23 +94,25 @@ window.addEventListener('scroll', () => {
 const sections = document.querySelectorAll('section');
 const navItems = document.querySelectorAll('.nav-links a');
 
-window.addEventListener('scroll', () => {
-    let current = '';
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop;
-        const sectionHeight = section.clientHeight;
-        if (window.pageYOffset >= (sectionTop - 200)) {
-            current = section.getAttribute('id');
-        }
-    });
+if (sections.length > 0 && navItems.length > 0) {
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            if (window.pageYOffset >= (sectionTop - 200)) {
+                current = section.getAttribute('id');
+            }
+        });
 
-    navItems.forEach(item => {
-        item.classList.remove('active');
-        if (item.getAttribute('href').slice(1) === current) {
-            item.classList.add('active');
-        }
+        navItems.forEach(item => {
+            item.classList.remove('active');
+            if (item.getAttribute('href').slice(1) === current) {
+                item.classList.add('active');
+            }
+        });
     });
-});
+}
 
 // Scroll Animation for Elements
 const observerOptions = {
@@ -131,7 +140,8 @@ document.querySelectorAll('.timeline-item, .skill-category, .stat-box, .educatio
 // Contact Form Handling
 const contactForm = document.getElementById('contactForm');
 
-contactForm.addEventListener('submit', (e) => {
+if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
     e.preventDefault();
     
     // Get form values
@@ -156,7 +166,8 @@ contactForm.addEventListener('submit', (e) => {
     // - EmailJS (https://www.emailjs.com/)
     // - FormSpree (https://formspree.io/)
     // - Custom backend API
-});
+    });
+}
 
 // Typing Effect for Hero Title (Optional Enhancement)
 // const heroTitle = document.querySelector('.hero-title');
