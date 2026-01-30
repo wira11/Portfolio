@@ -53,34 +53,39 @@ canvas.addEventListener('click', (e) => {
 });
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// PREMIUM COLOR SYSTEM - Eye-Friendly Pastel Palette
+// GALAXY COLOR SYSTEM - Deep Space Nebula Palette
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const colors = {
-    primary: [
-        [224, 242, 254],  // Ultra soft sky
-        [186, 230, 253],  // Soft azure
-        [147, 197, 253]   // Gentle blue
+    nebula: [
+        [138, 43, 226],   // Deep purple (nebula core)
+        [75, 0, 130],     // Indigo (space)
+        [147, 51, 234]    // Violet (outer nebula)
     ],
-    accent: [
-        [165, 180, 252],  // Soft indigo
-        [199, 210, 254],  // Pale lavender
-        [196, 181, 253]   // Gentle purple
+    stars: [
+        [255, 255, 255],  // White stars
+        [200, 220, 255],  // Blue-white stars
+        [255, 240, 200]   // Yellow-white stars
     ],
-    highlight: [
-        [253, 224, 239],  // Soft pink
-        [251, 207, 232],  // Light rose
-        [244, 240, 254]   // Pale lavender
+    cosmic: [
+        [255, 105, 180],  // Hot pink (cosmic dust)
+        [0, 191, 255],    // Deep sky blue
+        [186, 85, 211]    // Medium orchid
+    ],
+    core: [
+        [255, 215, 0],    // Gold (galactic center)
+        [255, 165, 0],    // Orange
+        [255, 140, 0]     // Dark orange
     ]
 };
 
-function getColor(type = 'primary', index = 0, alpha = 1) {
+function getColor(type = 'nebula', index = 0, alpha = 1) {
     const palette = colors[type];
     const color = palette[index % palette.length];
     return `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha})`;
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// FLOW FIELD - Perfect Rotating Organic Movement System
+// GALAXY SPIRAL FLOW FIELD - Spiral Arms Pattern
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 class FlowField {
     constructor() {
@@ -89,7 +94,8 @@ class FlowField {
         this.rows = Math.ceil(canvas.height / this.resolution);
         this.field = [];
         this.time = 0;
-        this.rotationSpeed = 0.0005; // Smooth rotation speed
+        this.rotationSpeed = 0.0003; // Slower for galaxy feel
+        this.spiralArms = 3; // Number of spiral arms
         this.generate();
     }
     
@@ -105,22 +111,27 @@ class FlowField {
     update() {
         this.time += this.rotationSpeed;
         
-        // Update field with smooth rotation
+        const centerX = this.cols / 2;
+        const centerY = this.rows / 2;
+        
         for (let y = 0; y < this.rows; y++) {
             for (let x = 0; x < this.cols; x++) {
-                const centerX = this.cols / 2;
-                const centerY = this.rows / 2;
                 const dx = x - centerX;
                 const dy = y - centerY;
-                
-                // Create perfect circular rotation with vortex effect
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 const baseAngle = Math.atan2(dy, dx);
-                const rotationAngle = this.time + (distance * 0.1);
                 
-                // Combine circular motion with wave patterns
-                const angle = baseAngle + rotationAngle + 
-                             Math.sin(distance * 0.3 + this.time * 2) * 0.5;
+                // Create galaxy spiral arms
+                const spiralTightness = 0.3;
+                const spiralAngle = baseAngle - (distance * spiralTightness) + this.time;
+                
+                // Add spiral arm density variation
+                const armInfluence = Math.sin(baseAngle * this.spiralArms - distance * 0.1 + this.time * 3) * 0.3;
+                
+                // Orbital rotation speed decreases with distance (like real galaxy)
+                const orbitalSpeed = 1 / (1 + distance * 0.05);
+                
+                const angle = spiralAngle + armInfluence + (this.time * orbitalSpeed);
                 
                 this.field[y][x] = angle;
             }
@@ -149,30 +160,49 @@ class Particle {
     }
     
     reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.vx = (Math.random() - 0.5) * 0.5;
-        this.vy = (Math.random() - 0.5) * 0.5;
+        // Galaxy center point
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        
+        // Orbital distance from center
+        const orbitRadius = (Math.random() * 0.8 + 0.2) * Math.min(canvas.width, canvas.height) / 2;
+        const angle = Math.random() * Math.PI * 2;
+        
+        this.x = centerX + Math.cos(angle) * orbitRadius;
+        this.y = centerY + Math.sin(angle) * orbitRadius;
+        this.orbitRadius = orbitRadius;
+        this.orbitAngle = angle;
+        this.orbitSpeed = 0.0005 / (1 + orbitRadius * 0.001); // Slower at edges
+        
+        this.vx = (Math.random() - 0.5) * 0.3;
+        this.vy = (Math.random() - 0.5) * 0.3;
         
         if (this.type === 'ambient') {
-            this.size = Math.random() * 2 + 1;
-            this.baseSize = this.size;
-            this.opacity = Math.random() * 0.3 + 0.15;
-            this.colorType = 'primary';
-            this.colorIndex = Math.floor(Math.random() * 3);
-        } else if (this.type === 'accent') {
             this.size = Math.random() * 1.5 + 0.5;
             this.baseSize = this.size;
             this.opacity = Math.random() * 0.4 + 0.2;
-            this.colorType = 'accent';
+            this.colorType = 'nebula';
+            this.colorIndex = Math.floor(Math.random() * 3);
+        } else if (this.type === 'accent') {
+            this.size = Math.random() * 2 + 1;
+            this.baseSize = this.size;
+            this.opacity = Math.random() * 0.6 + 0.3;
+            this.colorType = 'cosmic';
+            this.colorIndex = Math.floor(Math.random() * 3);
+        } else if (this.type === 'star') {
+            this.size = Math.random() * 1 + 0.3;
+            this.baseSize = this.size;
+            this.opacity = Math.random() * 0.8 + 0.5;
+            this.colorType = 'stars';
             this.colorIndex = Math.floor(Math.random() * 3);
         }
         
         this.life = 1;
         this.maxLife = 1;
         this.phase = Math.random() * Math.PI * 2;
-        this.rotation = 0; // For perfect rotation
-        this.rotationSpeed = (Math.random() - 0.5) * 0.02; // Individual rotation speed
+        this.rotation = 0;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.03;
+        this.twinkleSpeed = Math.random() * 0.05 + 0.02;
     }
     
     draw() {
@@ -211,12 +241,31 @@ class Particle {
     }
     
     update() {
-        // Flow field influence for organic movement
-        const angle = flowField.lookup(this.x, this.y);
-        this.vx += Math.cos(angle) * 0.05;
-        this.vy += Math.sin(angle) * 0.05;
+        // Galaxy center
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
         
-        // Advanced mouse interaction - magnetic attraction/repulsion
+        // Orbital motion around galactic center
+        this.orbitAngle += this.orbitSpeed;
+        const targetX = centerX + Math.cos(this.orbitAngle) * this.orbitRadius;
+        const targetY = centerY + Math.sin(this.orbitAngle) * this.orbitRadius;
+        
+        // Smooth movement towards orbital position
+        this.x += (targetX - this.x) * 0.05;
+        this.y += (targetY - this.y) * 0.05;
+        
+        // Flow field influence for spiral arms
+        const angle = flowField.lookup(this.x, this.y);
+        this.vx += Math.cos(angle) * 0.03;
+        this.vy += Math.sin(angle) * 0.03;
+        
+        // Apply velocity
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vx *= 0.92;
+        this.vy *= 0.92;
+        
+        // Mouse interaction - gravitational pull
         if (mouse.isActive && mouse.x !== null) {
             const dx = mouse.x - this.x;
             const dy = mouse.y - this.y;
@@ -225,45 +274,38 @@ class Particle {
             
             if (distSq < radiusSq && distSq > 0) {
                 const dist = Math.sqrt(distSq);
-                const force = (1 - dist / mouse.radius) * 0.5;
+                const force = (1 - dist / mouse.radius) * 0.3;
                 const angle = Math.atan2(dy, dx);
                 
-                // Gentle magnetic repulsion
-                this.vx -= Math.cos(angle) * force * 0.3;
-                this.vy -= Math.sin(angle) * force * 0.3;
+                // Gentle pull towards mouse
+                this.vx += Math.cos(angle) * force * 0.2;
+                this.vy += Math.sin(angle) * force * 0.2;
                 
-                // Dynamic size scaling
-                const targetSize = this.baseSize * (1 + force * 3);
+                // Dynamic sizing
+                const targetSize = this.baseSize * (1 + force * 2);
                 this.size += (targetSize - this.size) * 0.15;
                 
-                // Dynamic opacity
-                const targetOpacity = Math.min(0.6, this.opacity + force * 0.3);
+                const targetOpacity = Math.min(0.9, this.opacity + force * 0.4);
                 this.opacity += (targetOpacity - this.opacity) * 0.1;
             } else {
-                // Smooth return to base state
                 this.size += (this.baseSize - this.size) * 0.05;
-                const baseOpacity = this.type === 'ambient' ? 0.25 : 0.3;
+                const baseOpacity = this.type === 'star' ? 0.7 : (this.type === 'ambient' ? 0.3 : 0.5);
                 this.opacity += (baseOpacity - this.opacity) * 0.03;
             }
         }
         
-        // Apply velocity with elegant damping
-        this.x += this.vx;
-        this.y += this.vy;
-        this.vx *= 0.95;
-        this.vy *= 0.95;
-        
-        // Gentle breathing pulse
-        this.phase += 0.02;
-        
-        // Perfect smooth rotation
+        // Twinkling and rotation
+        this.phase += this.type === 'star' ? this.twinkleSpeed : 0.02;
         this.rotation += this.rotationSpeed;
         
-        // Seamless edge wrapping
-        if (this.x < -20) this.x = canvas.width + 20;
-        if (this.x > canvas.width + 20) this.x = -20;
-        if (this.y < -20) this.y = canvas.height + 20;
-        if (this.y > canvas.height + 20) this.y = -20;
+        // Boundary containment
+        const margin = 5;
+        if (this.x < margin || this.x > canvas.width - margin) {
+            this.orbitAngle = Math.PI - this.orbitAngle;
+        }
+        if (this.y < margin || this.y > canvas.height - margin) {
+            this.orbitAngle = -this.orbitAngle;
+        }
     }
 }
 
@@ -275,39 +317,58 @@ class BurstParticle {
         this.x = x;
         this.y = y;
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 3 + 2;
+        const speed = Math.random() * 4 + 2;
         this.vx = Math.cos(angle) * speed;
         this.vy = Math.sin(angle) * speed;
-        this.size = Math.random() * 2 + 1;
+        this.size = Math.random() * 2.5 + 1;
         this.life = 1;
-        this.colorType = 'highlight';
+        this.colorType = 'cosmic';
         this.colorIndex = Math.floor(Math.random() * 3);
+        this.rotation = 0;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.1;
     }
     
     update() {
         this.x += this.vx;
         this.y += this.vy;
-        this.vx *= 0.95;
-        this.vy *= 0.95;
-        this.life -= 0.015;
+        this.vx *= 0.96;
+        this.vy *= 0.96;
+        this.life -= 0.012;
+        this.rotation += this.rotationSpeed;
+        
+        // Keep burst particles inside canvas
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+            this.life = 0;
+        }
     }
     
     draw() {
         if (this.life <= 0) return;
         
-        const alpha = this.life * 0.8;
+        const alpha = this.life * 0.9;
+        
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        
+        // Cosmic dust glow
+        const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size * 3);
+        gradient.addColorStop(0, getColor(this.colorType, this.colorIndex, alpha));
+        gradient.addColorStop(0.5, getColor(this.colorType, this.colorIndex, alpha * 0.5));
+        gradient.addColorStop(1, getColor(this.colorType, this.colorIndex, 0));
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.size * 3, 0, Math.PI * 2);
+        ctx.fill();
         
         // Particle core
         ctx.fillStyle = getColor(this.colorType, this.colorIndex, alpha);
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.arc(0, 0, this.size, 0, Math.PI * 2);
         ctx.fill();
         
-        // Outer glow
-        ctx.fillStyle = getColor(this.colorType, this.colorIndex, alpha * 0.3);
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size * 2, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.restore();
     }
 }
 
@@ -315,25 +376,30 @@ let particles = [];
 let burstParticles = [];
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// PARTICLE INITIALIZATION
+// GALAXY PARTICLE INITIALIZATION
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function initParticles() {
     particles = [];
-    const count = Math.min(100, Math.floor((canvas.width * canvas.height) / 8000));
+    const count = Math.min(150, Math.floor((canvas.width * canvas.height) / 6000));
     
-    // 70% ambient particles
-    for (let i = 0; i < count * 0.7; i++) {
+    // 50% nebula particles
+    for (let i = 0; i < count * 0.5; i++) {
         particles.push(new Particle('ambient'));
     }
     
-    // 30% accent particles
+    // 30% cosmic dust particles
     for (let i = 0; i < count * 0.3; i++) {
         particles.push(new Particle('accent'));
+    }
+    
+    // 20% stars
+    for (let i = 0; i < count * 0.2; i++) {
+        particles.push(new Particle('star'));
     }
 }
 
 function createBurst(x, y) {
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 20; i++) {
         burstParticles.push(new BurstParticle(x, y));
     }
 }
@@ -342,29 +408,34 @@ function createBurst(x, y) {
 // CONSTELLATION CONNECTIONS - Gradient Lines
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function drawConnections() {
-    const maxDist = 140;
+    const maxDist = 160;
     
     for (let i = 0; i < particles.length; i++) {
+        if (particles[i].type === 'star') continue; // Stars don't connect
+        
         let connections = 0;
         
-        for (let j = i + 1; j < particles.length && connections < 2; j++) {
+        for (let j = i + 1; j < particles.length && connections < 3; j++) {
+            if (particles[j].type === 'star') continue;
+            
             const dx = particles[i].x - particles[j].x;
             const dy = particles[i].y - particles[j].y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             
             if (dist < maxDist) {
-                const alpha = (1 - dist / maxDist) * 0.15;
+                const alpha = (1 - dist / maxDist) * 0.2;
                 
-                // Beautiful gradient connection
+                // Nebula connection gradient
                 const gradient = ctx.createLinearGradient(
                     particles[i].x, particles[i].y,
                     particles[j].x, particles[j].y
                 );
-                gradient.addColorStop(0, getColor('primary', 2, alpha));
-                gradient.addColorStop(1, getColor('accent', 1, alpha));
+                gradient.addColorStop(0, getColor('nebula', 2, alpha));
+                gradient.addColorStop(0.5, getColor('cosmic', 1, alpha));
+                gradient.addColorStop(1, getColor('nebula', 0, alpha));
                 
                 ctx.strokeStyle = gradient;
-                ctx.lineWidth = 1;
+                ctx.lineWidth = 1.5;
                 ctx.beginPath();
                 ctx.moveTo(particles[i].x, particles[i].y);
                 ctx.lineTo(particles[j].x, particles[j].y);
@@ -380,17 +451,37 @@ function drawConnections() {
 // AMBIENT BACKGROUND EFFECTS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function drawAmbient() {
-    const time = Date.now() * 0.0003;
+    const time = Date.now() * 0.0002;
     
-    for (let i = 0; i < 2; i++) {
-        const x = canvas.width * (0.3 + i * 0.4);
-        const y = canvas.height * 0.5;
-        const radius = 250 + Math.sin(time + i * 2) * 30;
+    // Galactic core - bright center
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const coreRadius = 80 + Math.sin(time) * 10;
+    
+    const coreGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, coreRadius);
+    const coreAlpha = 0.08 + Math.sin(time * 2) * 0.03;
+    coreGradient.addColorStop(0, getColor('core', 0, coreAlpha));
+    coreGradient.addColorStop(0.4, getColor('core', 1, coreAlpha * 0.6));
+    coreGradient.addColorStop(1, getColor('core', 2, 0));
+    
+    ctx.fillStyle = coreGradient;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, coreRadius, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Deep space background nebula clouds
+    for (let i = 0; i < 3; i++) {
+        const angle = (time + i * 2) * 0.3;
+        const distance = 150 + i * 80;
+        const x = centerX + Math.cos(angle) * distance;
+        const y = centerY + Math.sin(angle) * distance;
+        const radius = 200 + Math.sin(time + i) * 40;
         
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-        const alpha = 0.015 + Math.sin(time + i) * 0.008;
-        gradient.addColorStop(0, getColor('primary', i, alpha));
-        gradient.addColorStop(1, getColor('primary', i, 0));
+        const alpha = 0.03 + Math.sin(time + i) * 0.015;
+        gradient.addColorStop(0, getColor('nebula', i, alpha));
+        gradient.addColorStop(0.6, getColor('cosmic', i, alpha * 0.5));
+        gradient.addColorStop(1, getColor('nebula', i, 0));
         
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -403,42 +494,49 @@ function drawAmbient() {
 function drawMouseEffects() {
     if (!mouse.isActive || mouse.x === null) return;
     
-    // Elegant cursor glow
+    // Gravitational field effect
     const gradient = ctx.createRadialGradient(
         mouse.x, mouse.y, 0,
         mouse.x, mouse.y, mouse.radius
     );
     
-    gradient.addColorStop(0, 'rgba(224, 242, 254, 0.12)');
-    gradient.addColorStop(0.5, 'rgba(199, 210, 254, 0.06)');
-    gradient.addColorStop(1, 'rgba(165, 180, 252, 0)');
+    gradient.addColorStop(0, 'rgba(255, 215, 0, 0.15)');
+    gradient.addColorStop(0.4, 'rgba(186, 85, 211, 0.08)');
+    gradient.addColorStop(1, 'rgba(75, 0, 130, 0)');
     
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Click ripple effects
+    // Click ripple supernova effects
     for (let i = mouse.clickRipples.length - 1; i >= 0; i--) {
         const ripple = mouse.clickRipples[i];
-        ripple.radius += 4;
-        ripple.opacity -= 0.02;
+        ripple.radius += 5;
+        ripple.opacity -= 0.018;
         
         if (ripple.opacity <= 0) {
             mouse.clickRipples.splice(i, 1);
             continue;
         }
         
-        // Outer ripple
-        ctx.strokeStyle = getColor('highlight', 1, ripple.opacity * 0.6);
-        ctx.lineWidth = 2;
+        // Outer shockwave
+        ctx.strokeStyle = getColor('cosmic', 0, ripple.opacity * 0.8);
+        ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
         ctx.stroke();
         
-        // Inner ripple
-        ctx.strokeStyle = getColor('highlight', 0, ripple.opacity * 0.3);
+        // Middle wave
+        ctx.strokeStyle = getColor('cosmic', 1, ripple.opacity * 0.6);
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(ripple.x, ripple.y, ripple.radius + 15, 0, Math.PI * 2);
+        ctx.stroke();
+        
+        // Inner wave
+        ctx.strokeStyle = getColor('cosmic', 2, ripple.opacity * 0.4);
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.arc(ripple.x, ripple.y, ripple.radius + 10, 0, Math.PI * 2);
+        ctx.arc(ripple.x, ripple.y, ripple.radius + 30, 0, Math.PI * 2);
         ctx.stroke();
     }
 }
@@ -492,12 +590,23 @@ function animate() {
 initParticles();
 animate();
 
+// Handle window resize with debouncing
 let resizeTimeout;
 window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
         resizeCanvas();
+        flowField.cols = Math.ceil(canvas.width / flowField.resolution);
+        flowField.rows = Math.ceil(canvas.height / flowField.resolution);
         flowField.generate();
         initParticles();
     }, 300);
+});
+
+// Ensure canvas matches section on load
+window.addEventListener('load', () => {
+    resizeCanvas();
+    flowField.cols = Math.ceil(canvas.width / flowField.resolution);
+    flowField.rows = Math.ceil(canvas.height / flowField.resolution);
+    flowField.generate();
 });
