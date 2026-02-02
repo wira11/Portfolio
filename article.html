@@ -4,280 +4,350 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Article - Wira</title>
-    <meta name="description" content="Read full article about QA and software testing">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%234285F4'/%3E%3Cstop offset='33%25' style='stop-color:%23EA4335'/%3E%3Cstop offset='66%25' style='stop-color:%23FBBC04'/%3E%3Cstop offset='100%25' style='stop-color:%2334A853'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='48' fill='url(%23g)'/%3E%3Ctext x='50' y='73' font-family='Arial' font-size='60' font-weight='bold' fill='white' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes slideDown {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+        
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            z-index: 9999;
+            transition: width 0.1s ease-out;
+        }
+        
+        .floating-share {
+            position: fixed;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 50;
+        }
+        
+        @media (max-width: 1024px) {
+            .floating-share { display: none; }
+        }
+        
+        .toc {
+            position: sticky;
+            top: 120px;
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
+        }
+        
+        .toc::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .toc::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 1200px) {
+            .article-layout { grid-template-columns: 1fr !important; }
+            .toc { display: none; }
+        }
+    </style>
 </head>
-<body>
-    <!-- Simple Header for Article Page -->
-    <header style="background: white; border-bottom: 1px solid #e5e7eb;">
-        <nav class="navbar" style="padding: 0;">
-            <div style="max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
-                <a href="blog.html" style="display: inline-flex; align-items: center; color: #6b7280; text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: color 0.2s;">
-                    <svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    All Articles
+<body style="background: #fafafa;">
+    <!-- Reading Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <!-- Enhanced Header -->
+    <header style="background: white; padding: 16px 0; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <div style="max-width: 1400px; margin: 0 auto; padding: 0 40px; display: flex; align-items: center; justify-content: space-between;">
+            <a href="blog.html" style="display: inline-flex; align-items: center; gap: 8px; color: #667eea; text-decoration: none; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.gap='12px'; this.style.color='#764ba2'" onmouseout="this.style.gap='8px'; this.style.color='#667eea'">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.5 5L7.5 10L12.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Back to Blog
+            </a>
+            
+            <div style="display: flex; align-items: center; gap: 24px;">
+                <a href="index.html" style="color: #6b7280; text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='#667eea'" onmouseout="this.style.color='#6b7280'">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="blog.html" style="color: #6b7280; text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='#667eea'" onmouseout="this.style.color='#6b7280'">
+                    <i class="fas fa-th-large"></i> All Articles
                 </a>
             </div>
-        </nav>
+        </div>
     </header>
+    
+    <!-- Floating Share Buttons -->
+    <div class="floating-share" id="floatingShare">
+        <a href="#" id="shareLinkedIn" title="Share on LinkedIn"
+           style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: #0077b5; color: white; border-radius: 50%; text-decoration: none; transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,119,181,0.3);"
+           onmouseover="this.style.transform='scale(1.15)'; this.style.boxShadow='0 4px 16px rgba(0,119,181,0.5)'" 
+           onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(0,119,181,0.3)'">
+            <i class="fab fa-linkedin-in"></i>
+        </a>
+        <a href="#" id="shareTwitter" title="Share on Twitter"
+           style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: #1da1f2; color: white; border-radius: 50%; text-decoration: none; transition: all 0.3s; box-shadow: 0 2px 8px rgba(29,161,242,0.3);"
+           onmouseover="this.style.transform='scale(1.15)'; this.style.boxShadow='0 4px 16px rgba(29,161,242,0.5)'" 
+           onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(29,161,242,0.3)'">
+            <i class="fab fa-twitter"></i>
+        </a>
+        <button id="copyLink" title="Copy Link"
+           style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: #6b7280; color: white; border-radius: 50%; border: none; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 8px rgba(107,114,128,0.3);"
+           onmouseover="this.style.transform='scale(1.15)'; this.style.background='#374151'; this.style.boxShadow='0 4px 16px rgba(107,114,128,0.5)'" 
+           onmouseout="this.style.transform='scale(1)'; this.style.background='#6b7280'; this.style.boxShadow='0 2px 8px rgba(107,114,128,0.3)'">
+            <i class="fas fa-link"></i>
+        </button>
+        <button id="bookmarkBtn" title="Bookmark"
+           style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 50%; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 8px rgba(102,126,234,0.2);"
+           onmouseover="this.style.transform='scale(1.15)'; this.style.background='#667eea'; this.style.color='white'; this.style.boxShadow='0 4px 16px rgba(102,126,234,0.4)'" 
+           onmouseout="this.style.transform='scale(1)'; this.style.background='white'; this.style.color='#667eea'; this.style.boxShadow='0 2px 8px rgba(102,126,234,0.2)'">
+            <i class="far fa-bookmark"></i>
+        </button>
+    </div>
 
-    <!-- Article Content - Medium Style -->
-    <article style="max-width: 680px; margin: 0 auto; padding: 56px 24px 80px;">
-        <div id="articleContent">
+    <!-- Main Article Layout -->
+    <div class="article-layout" style="max-width: 1400px; margin: 0 auto; padding: 0 40px; display: grid; grid-template-columns: 1fr 280px; gap: 64px; margin-top: 40px; margin-bottom: 80px;">
+        
+        <!-- Article Content -->
+        <article id="articleContent" style="min-width: 0;">
             <div style="text-align: center; color: #9ca3af; padding: 60px 0;">Loading article...</div>
-        </div>
-    </article>
+        </article>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 WPP. All Rights Reserved.</p>
-            <div class="footer-links">
-                <a href="index.html">Back to Portfolio</a>
-                <a href="blog.html">Blog</a>
-                <a href="index.html#contact">Contact</a>
-                <a href="https://www.linkedin.com/in/wira-putrawan/" target="_blank">LinkedIn</a>
+        <!-- Table of Contents Sidebar -->
+        <aside class="toc" id="tocContainer" style="display: none;">
+            <div style="background: white; border-radius: 12px; padding: 24px; border: 1px solid #e5e7eb;">
+                <h3 style="font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #111827; margin: 0 0 16px 0;">On This Page</h3>
+                <nav id="tocList" style="display: flex; flex-direction: column; gap: 8px;">
+                    <!-- TOC will be generated here -->
+                </nav>
             </div>
-        </div>
-    </footer>
+        </aside>
+    </div>
 
-    <script src="js/script.js"></script>
     <script>
         // Get article ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const articleId = parseInt(urlParams.get('id'));
 
+        // Reading Progress Bar
+        function updateProgressBar() {
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight - windowHeight;
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const progress = (scrollTop / documentHeight) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        window.addEventListener('scroll', updateProgressBar);
+
+        // Copy Link Function
+        document.getElementById('copyLink').addEventListener('click', function() {
+            navigator.clipboard.writeText(window.location.href);
+            const icon = this.querySelector('i');
+            icon.className = 'fas fa-check';
+            setTimeout(() => {
+                icon.className = 'fas fa-link';
+            }, 2000);
+        });
+
+        // Bookmark Function
+        document.getElementById('bookmarkBtn').addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('far')) {
+                icon.className = 'fas fa-bookmark';
+                this.style.background = '#667eea';
+                this.style.color = 'white';
+            } else {
+                icon.className = 'far fa-bookmark';
+                this.style.background = 'white';
+                this.style.color = '#667eea';
+            }
+        });
+
+        // Load Article Function
         async function loadArticle() {
             try {
+                console.log('Loading article with ID:', articleId);
+                
                 const response = await fetch('data/articles.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const articles = await response.json();
+                console.log('Articles loaded:', articles.length);
+                
                 const article = articles.find(a => a.id === articleId);
-
+                console.log('Found article:', article);
+                
                 if (!article) {
-                    document.getElementById('articleContent').innerHTML = '<p>Article not found</p>';
+                    document.getElementById('articleContent').innerHTML = '<p style="text-align: center; color: #6b7280; padding: 40px 0;">Article not found.</p>';
                     return;
                 }
 
-                // Set page title
+                // Update social share links
+                document.getElementById('shareLinkedIn').href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`;
+                document.getElementById('shareTwitter').href = `https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(article.title)}`;
+                
+                // Update page title
                 document.title = `${article.title} - Wira`;
 
-                console.log('Article title:', article.title);
-                console.log('Article content:', article.content);
+                // Calculate reading time
+                const wordsPerMinute = 200;
+                const wordCount = article.content.split(/\s+/).length;
+                const readingTime = Math.ceil(wordCount / wordsPerMinute);
 
-                // Simple and safe content formatting
+                // Format content
                 let formattedContent = '';
-                const paragraphs = article.content.split('\n\n');
+                const contentLines = article.content.split('\n');
                 
-                paragraphs.forEach((para, index) => {
-                    para = para.trim();
-                    if (!para) return;
+                contentLines.forEach(line => {
+                    line = line.trim();
+                    if (!line) return;
                     
-                    // Check if it's a heading
-                    if (para.startsWith('## ')) {
-                        formattedContent += `<h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 48px 0 20px 0; line-height: 1.3; letter-spacing: -0.01em;">${para.substring(3)}</h2>`;
-                    }
-                    // Check if it's a list
-                    else if (para.includes('\n- ')) {
-                        const items = para.split('\n')
-                            .filter(line => line.startsWith('- '))
-                            .map(line => `<li style="margin-bottom: 12px; color: #374151;">${line.substring(2)}</li>`)
-                            .join('');
-                        formattedContent += `<ul style="margin: 24px 0; padding-left: 24px; list-style: disc;">${items}</ul>`;
-                    }
-                    // Regular paragraph
-                    else {
-                        formattedContent += `<p style="margin-bottom: 24px; color: #374151; line-height: 1.75;">${para}</p>`;
+                    if (line.startsWith('## ')) {
+                        const headingText = line.substring(3);
+                        formattedContent += `<h2 id="${headingText.toLowerCase().replace(/\s+/g, '-')}" style="font-size: 1.75rem; font-weight: 700; line-height: 1.3; color: #111827; margin: 48px 0 24px 0; letter-spacing: -0.02em;">${headingText}</h2>`;
+                    } else if (line.startsWith('- ')) {
+                        if (!formattedContent.endsWith('</ul>')) {
+                            formattedContent += '<ul style="list-style: disc; padding-left: 24px; margin: 24px 0; color: #374151;">';
+                        }
+                        formattedContent += `<li style="margin-bottom: 12px; line-height: 1.75;">${line.substring(2)}</li>`;
+                    } else {
+                        if (formattedContent.endsWith('</li>')) {
+                            formattedContent += '</ul>';
+                        }
+                        formattedContent += `<p style="margin: 24px 0; line-height: 1.75; color: #374151; font-size: 1.0625rem;">${line}</p>`;
                     }
                 });
+                
+                if (formattedContent.endsWith('</li>')) {
+                    formattedContent += '</ul>';
+                }
 
-                // Display article with Medium-like styling
+                // Get featured image
+                const imageMap = {
+                    1: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&h=600&fit=crop',
+                    2: 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1200&h=600&fit=crop',
+                    3: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=600&fit=crop',
+                    4: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=600&fit=crop'
+                };
+
+                // Build article HTML
                 document.getElementById('articleContent').innerHTML = `
-                    <!-- Article Metadata -->
-                    <div style="margin-bottom: 32px;">
-                        <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px;">
-                            <time style="color: #6b7280; font-size: 0.875rem;">${article.date}</time>
-                            <span style="color: #d1d5db;">•</span>
-                            <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">${article.category}</span>
+                    <!-- Article Hero -->
+                    <div style="margin-bottom: 48px;">
+                        <!-- Featured Image -->
+                        <div style="margin: 0 -40px 32px -40px; height: 400px; overflow: hidden; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <img src="${imageMap[article.id] || imageMap[1]}" 
+                                 alt="${article.title}"
+                                 style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
                         </div>
-                        <h1 style="font-size: 2.5rem; font-weight: 700; line-height: 1.2; color: #111827; margin: 0 0 24px 0; letter-spacing: -0.02em;">${article.title}</h1>
+
+                        <!-- Article Metadata -->
+                        <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
+                            <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                ${article.category}
+                            </span>
+                            <div style="display: flex; align-items: center; gap: 12px; color: #6b7280; font-size: 0.875rem;">
+                                <span><i class="far fa-calendar"></i> ${article.date}</span>
+                                <span>•</span>
+                                <span><i class="far fa-clock"></i> ${readingTime} min read</span>
+                            </div>
+                        </div>
+
+                        <!-- Title -->
+                        <h1 style="font-size: 3rem; font-weight: 800; line-height: 1.1; color: #111827; margin: 0 0 48px 0; letter-spacing: -0.03em;">
+                            ${article.title}
+                        </h1>
                     </div>
-                    
+
                     <!-- Article Body -->
-                    <div style="font-size: 1.125rem; line-height: 1.75; color: #374151;">
+                    <div style="font-size: 1.0625rem; line-height: 1.75; color: #374151; max-width: 720px;">
                         ${formattedContent}
                     </div>
-                    
-                    <!-- Share Section -->
-                    <div style="margin-top: 64px; padding-top: 32px; border-top: 1px solid #e5e7eb;">
-                        <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
-                            <span style="color: #6b7280; font-size: 0.875rem; font-weight: 500;">Share this article:</span>
-                            <div style="display: flex; gap: 12px;">
-                                <a href="https://www.linkedin.com/sharing/share-offsite/?url=${window.location.href}" 
-                                   target="_blank" 
-                                   style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #0077b5; color: white; border-radius: 50%; text-decoration: none; transition: transform 0.2s;"
-                                   onmouseover="this.style.transform='scale(1.1)'" 
-                                   onmouseout="this.style.transform='scale(1)'">
-                                    <i class="fab fa-linkedin-in"></i>
-                                </a>
-                                <a href="https://twitter.com/intent/tweet?url=${window.location.href}&text=${encodeURIComponent(article.title)}" 
-                                   target="_blank" 
-                                   style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #1da1f2; color: white; border-radius: 50%; text-decoration: none; transition: transform 0.2s;"
-                                   onmouseover="this.style.transform='scale(1.1)'" 
-                                   onmouseout="this.style.transform='scale(1)'">
-                                    <i class="fab fa-twitter"></i>
-                                </a>
-                                <button onclick="navigator.clipboard.writeText(window.location.href); this.innerHTML='<i class=\\'fas fa-check\\'></i>'; setTimeout(() => this.innerHTML='<i class=\\'fas fa-link\\'></i>', 2000);" 
-                                   style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #6b7280; color: white; border-radius: 50%; border: none; cursor: pointer; transition: transform 0.2s;"
-                                   onmouseover="this.style.transform='scale(1.1)'; this.style.background='#374151'" 
-                                   onmouseout="this.style.transform='scale(1)'; this.style.background='#6b7280'">
-                                    <i class="fas fa-link"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Book CTA Section -->
-                    <div style="margin-top: 64px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 40px; border-radius: 16px; position: relative; overflow: hidden;">
-                        <!-- Decorative elements -->
-                        <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(255,215,0,0.05); border-radius: 50%; filter: blur(60px);"></div>
-                        <div style="position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; background: rgba(255,215,0,0.08); border-radius: 50%; filter: blur(50px);"></div>
-                        
-                        <div style="position: relative; z-index: 1;">
-                            <div style="text-align: center; margin-bottom: 32px;">
-                                <div style="display: inline-block; background: rgba(255,215,0,0.2); color: #ffd700; padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-bottom: 16px; border: 1px solid rgba(255,215,0,0.3); text-transform: uppercase; letter-spacing: 1px;">
-                                    📚 From The Author
-                                </div>
-                                <h3 style="color: white; font-size: 1.75rem; font-weight: 700; margin: 0 0 12px 0; line-height: 1.3;">
-                                    Enjoyed This Article? Check Out My Book!
-                                </h3>
-                                <p style="color: rgba(255,255,255,0.7); font-size: 1rem; max-width: 500px; margin: 0 auto;">
-                                    Dive deeper into transformational insights and real-life strategies for success
-                                </p>
+                    <!-- Author Info - Simple -->
+                    <div style="margin: 64px 0 40px; padding: 24px; background: linear-gradient(135deg, #667eea08 0%, #764ba208 100%); border-radius: 12px; border-left: 4px solid #667eea;">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 700; flex-shrink: 0;">
+                                W
                             </div>
-
-                            <div style="display: flex; gap: 32px; align-items: center; justify-content: center; flex-wrap: wrap;">
-                                <!-- Book Cover -->
-                                <div style="flex-shrink: 0;">
-                                    <img src="images/book-cover.jpg" 
-                                         alt="I Restart From Minus Book Cover" 
-                                         style="width: 160px; height: auto; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); transition: transform 0.3s;"
-                                         onmouseover="this.style.transform='scale(1.05) rotate(-2deg)'\" 
-                                         onmouseout="this.style.transform='scale(1) rotate(0deg)'">
-                                </div>
-                                
-                                <!-- Book Details -->
-                                <div style="flex: 1; min-width: 260px; max-width: 400px; text-align: center;">
-                                    <h4 style="color: white; font-size: 1.5rem; font-weight: 700; margin: 0 0 16px 0;">
-                                        I Restart From Minus
-                                    </h4>
-                                    
-                                    <div style="display: flex; gap: 16px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap;">
-                                        <div style="display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.8); font-size: 0.875rem;">
-                                            <i class="fas fa-star" style="color: #ffd700;"></i>
-                                            <span>Personal Growth</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.8); font-size: 0.875rem;">
-                                            <i class="fas fa-lightbulb" style="color: #ffd700;"></i>
-                                            <span>Life Lessons</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.8); font-size: 0.875rem;">
-                                            <i class="fas fa-rocket" style="color: #ffd700;"></i>
-                                            <span>Success Stories</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <a href="https://lynk.id/wiraputraone" 
-                                       target="_blank"
-                                       style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color: #1a1a2e; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 1rem; box-shadow: 0 4px 16px rgba(255,215,0,0.4); transition: all 0.3s;"
-                                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 24px rgba(255,215,0,0.6)'" 
-                                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(255,215,0,0.4)'">
-                                        <i class="fas fa-book-open"></i>
-                                        Get Your Copy
-                                        <i class="fas fa-external-link-alt" style="font-size: 0.8rem;"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Author Bio Section -->
-                    <div style="margin-top: 64px; padding: 32px; background: linear-gradient(135deg, #667eea08 0%, #764ba208 100%); border-radius: 16px; border: 1px solid #e5e7eb;">
-                        <h3 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin: 0 0 24px 0;">About the Author</h3>
-                        
-                        <div style="display: flex; gap: 24px; align-items: start; flex-wrap: wrap;">
-                            <!-- Author Photo -->
-                            <div style="flex-shrink: 0;">
-                                <div style="width: 96px; height: 96px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem; font-weight: 700; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
-                                    W
-                                </div>
-                            </div>
-                            
-                            <!-- Author Info -->
-                            <div style="flex: 1; min-width: 280px;">
-                                <h4 style="font-size: 1.25rem; font-weight: 700; color: #111827; margin: 0 0 4px 0;">Wira Putrawan</h4>
-                                <p style="color: #667eea; font-weight: 600; margin: 0 0 16px 0; font-size: 0.95rem;">Senior SDET | Test Automation Expert | Author</p>
-                                
-                                <p style="color: #4b5563; line-height: 1.6; margin: 0 0 20px 0; font-size: 0.95rem;">
-                                    Passionate about quality engineering, test automation, and building robust CI/CD pipelines. 
-                                    Author of "I Restart From Minus" - sharing insights from my journey in software testing, automation frameworks, and personal transformation.
-                                </p>
-                                
-                                <!-- Social Links -->
-                                <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;">
-                                    <a href="https://www.linkedin.com/in/wira-putrawan/" 
-                                       target="_blank" 
-                                       style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #0077b5; color: white; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s;"
-                                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0, 119, 181, 0.3)'" 
-                                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 700; color: #111827; margin-bottom: 4px;">Written by Wira</div>
+                                <div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 8px;">Senior SDET | Test Automation Expert</div>
+                                <div style="display: flex; gap: 12px;">
+                                    <a href="https://www.linkedin.com/in/wira-putrawan/" target="_blank" style="color: #667eea; text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='#764ba2'" onmouseout="this.style.color='#667eea'">
                                         <i class="fab fa-linkedin-in"></i> LinkedIn
                                     </a>
-                                    <a href="https://github.com/wira11?tab=repositories" 
-                                       target="_blank" 
-                                       style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #24292e; color: white; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s;"
-                                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(36, 41, 46, 0.3)'" 
-                                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                    <a href="https://github.com/wira11?tab=repositories" target="_blank" style="color: #667eea; text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='#764ba2'" onmouseout="this.style.color='#667eea'">
                                         <i class="fab fa-github"></i> GitHub
                                     </a>
-                                    <a href="https://medium.com/@wirapakpahan743" 
-                                       target="_blank" 
-                                       style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #00ab6c; color: white; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s;"
-                                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0, 171, 108, 0.3)'" 
-                                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                    <a href="https://medium.com/@wirapakpahan743" target="_blank" style="color: #667eea; text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='#764ba2'" onmouseout="this.style.color='#667eea'">
                                         <i class="fab fa-medium"></i> Medium
                                     </a>
-                                    <a href="index.html" 
-                                       style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #667eea; color: white; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s;"
-                                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'" 
-                                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                                        <i class="fas fa-globe"></i> Portfolio
-                                    </a>
-                                </div>
-                                
-                                <!-- Stats/Highlights -->
-                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; padding: 20px; background: white; border-radius: 12px; border: 1px solid #e5e7eb;">
-                                    <div style="text-align: center;">
-                                        <div style="font-size: 1.5rem; font-weight: 700; color: #667eea; margin-bottom: 4px;">10+</div>
-                                        <div style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Years in QA</div>
-                                    </div>
-                                    <div style="text-align: center;">
-                                        <div style="font-size: 1.5rem; font-weight: 700; color: #667eea; margin-bottom: 4px;">50+</div>
-                                        <div style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Projects</div>
-                                    </div>
-                                    <div style="text-align: center;">
-                                        <div style="font-size: 1.5rem; font-weight: 700; color: #667eea; margin-bottom: 4px;">5</div>
-                                        <div style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Certifications</div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                `;            } catch (error) {
+                `;
+
+                // Generate Table of Contents
+                generateTOC();
+                
+            } catch (error) {
                 console.error('Error loading article:', error);
-                document.getElementById('articleContent').innerHTML = '<p>Error loading article. Please try again later.</p>';
+                document.getElementById('articleContent').innerHTML = '<p style="text-align: center; color: #ef4444; padding: 40px 0;">Error loading article. Please try again later.</p>';
             }
+        }
+
+        // Generate Table of Contents
+        function generateTOC() {
+            const headings = document.querySelectorAll('article h2[id]');
+            if (headings.length === 0) {
+                return; // Don't show TOC if no headings
+            }
+
+            const tocList = document.getElementById('tocList');
+            const tocContainer = document.getElementById('tocContainer');
+            
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.href = `#${heading.id}`;
+                link.textContent = heading.textContent;
+                link.style.cssText = 'color: #6b7280; text-decoration: none; font-size: 0.875rem; line-height: 1.6; padding: 8px 12px; border-left: 2px solid transparent; transition: all 0.2s; display: block;';
+                
+                link.addEventListener('mouseover', function() {
+                    this.style.color = '#667eea';
+                    this.style.borderLeftColor = '#667eea';
+                    this.style.background = '#f9fafb';
+                });
+                
+                link.addEventListener('mouseout', function() {
+                    if (!this.classList.contains('active')) {
+                        this.style.color = '#6b7280';
+                        this.style.borderLeftColor = 'transparent';
+                        this.style.background = 'transparent';
+                    }
+                });
+                
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    heading.scrollIntoView({ behavior: 'smooth' });
+                });
+                
+                tocList.appendChild(link);
+            });
+            
+            tocContainer.style.display = 'block';
         }
 
         // Load article on page load
