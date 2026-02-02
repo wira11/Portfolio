@@ -135,7 +135,7 @@
     <script>
         // Get article ID from URL
         const urlParams = new URLSearchParams(window.location.search);
-        const articleId = parseInt(urlParams.get('id'));
+        const articleId = parseInt(urlParams.get('id')) || 1; // Default to article 1 if no ID provided
 
         // Reading Progress Bar
         function updateProgressBar() {
